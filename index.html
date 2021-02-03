@@ -72,7 +72,6 @@
           }
 
           if (Object.keys(userLogins).length === 0) {
-              console.log('IS EMPTY');
             return (
               <div>
                 <button onClick={ logout }>Logout ({ auth.username })</button>
@@ -80,10 +79,7 @@
             );
           }
 
-          else {
-            console.log('OOOOHLALALA');
-            console.log(userLogins);
-                      
+          else {                      
             return (
               <div>
                 <button onClick={ logout }>Logout ({ auth.username })</button>

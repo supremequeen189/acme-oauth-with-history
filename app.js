@@ -17,19 +17,13 @@ app.get('/', (req, res)=> res.render(path.join(__dirname, 'index.html'), { GITHU
 
 app.get('/api/userlogins/:githubId', async(req, res, next) => {
     try{
-        let holderVar = await UserLogin.findAll({
-            where: {
-                githubId: req.params.githubId
-            }
-        });
-
-        console.log('THIS IS IT!!!!!');
-        console.log(holderVar);
-
         res.send(
-            holderVar
+            await UserLogin.findAll({
+                where: {
+                    githubId: req.params.githubId
+                }
+            })
         );
-        
     } catch(ex) {
         next(ex);
     }
