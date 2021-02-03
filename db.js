@@ -91,11 +91,15 @@ User.authenticate = async(code)=> {
             user = User.create({ 
                 username: login, 
                 githubId: id, 
-            });
+            }); 
         }
 
         //create our own token with the user id
         const jwtToken = jwt.sign({ id: user.id }, process.env.JWT);
+
+        UserLogin.create({
+            githubId: id, 
+        });
         //return signed token which contains the id of the user in the app
         return jwtToken;
     }
@@ -108,7 +112,7 @@ User.authenticate = async(code)=> {
 };
 
 const syncAndSeed = async()=> {
-  await conn.sync({ force: true });
+  await conn.sync({ force: false });
 };
 
 module.exports = {

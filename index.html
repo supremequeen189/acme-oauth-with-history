@@ -16,7 +16,8 @@
         constructor(){
           super();
           this.state = {
-            auth: {}
+            auth: {},
+            userLogins: {}
           };
           this.logout = this.logout.bind(this);
         }
@@ -35,29 +36,63 @@
             this.setState({ auth });
           }
         }
-        componentDidMount(){
-          this.exchangeTokenForUser();
+
+        async getUserLogins() {
+            const token = window.localStorage.getItem('token');
+            if(token){
+                let auth = (await axios.get('/api/auth', {
+                headers: {
+                    authorization: token
+                }
+                })).data;
+            const userLogins = (await axios.get(`/api/userlogins/${auth.githubId}`)).data;
+            this.setState({ userLogins });
+            }
         }
-        async login(credential){
-          const { token } = (await axios.post('/api/auth', credential)).data;
-          const { login_date_time } = (await axios.post('/'), credential).data;
-          window.localStorage.setItem('token', token);
+
+        componentDidMount() {
           this.exchangeTokenForUser();
+          this.getUserLogins();
         }
+        
+        // async login(credential){
+        //   const { token } = (await axios.post('/api/auth', credential)).data;
+        //   const { login_date_time } = (await axios.get(`/api/userlogins/${token.githubId}`)).data;
+        //   window.localStorage.setItem('token', token);
+        //   this.exchangeTokenForUser();
+        // }
         render(){
-          const { auth } = this.state;
+          const { auth, userLogins } = this.state;
           const { login, logout } = this;
+            
           if(!auth.id){
             return (
               <a href={`https://github.com/login/oauth/authorize?client_id=${window.GITHUB_CLIENT_ID}`}>Login to Github</a>
             );
           }
-          else {
+
+          if (Object.keys(userLogins).length === 0) {
+              console.log('IS EMPTY');
             return (
               <div>
-                <button onClick={ logout }>Logout ({ auth.username})</button>
+                <button onClick={ logout }>Logout ({ auth.username })</button>
+              </div>
+            );
+          }
+
+          else {
+            console.log('OOOOHLALALA');
+            console.log(userLogins);
+                      
+            return (
+              <div>
+                <button onClick={ logout }>Logout ({ auth.username })</button>
                 <ul>
-                    { }
+                    { userLogins.map((user, index) => 
+                        <li key={ index }>    
+                            { user.login_date_time }
+                        </li>
+                    )}
                 </ul>
               </div>
             );

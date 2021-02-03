@@ -15,12 +15,21 @@ const { default: axios } = require('axios');
 
 app.get('/', (req, res)=> res.render(path.join(__dirname, 'index.html'), { GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID }));
 
-app.post('/', async(req, res, next) => {
+app.get('/api/userlogins/:githubId', async(req, res, next) => {
     try{
-        const { id } = await jwt.verify(token, process.env.JWT);
-        res.send(await UserLogin.createbyPk(id));
+        let holderVar = await UserLogin.findAll({
+            where: {
+                githubId: req.params.githubId
+            }
+        });
+
         console.log('THIS IS IT!!!!!');
-        console.log(id);
+        console.log(holderVar);
+
+        res.send(
+            holderVar
+        );
+        
     } catch(ex) {
         next(ex);
     }
